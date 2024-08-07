@@ -1,0 +1,135 @@
+<template>
+  <div>
+    <span>用户名：</span>
+    <el-input v-model="username" placeholder="请输入用户名" style="width: 200px" clearable @clear="clean"></el-input>
+    <el-button style="margin-left: 20px" type="primary" @click="load">搜索</el-button>
+
+    <el-divider></el-divider>
+    <el-card class="box-card">
+      <div>
+        <div slot="header" class="clearfix">
+          <span><b style="font-size: 20px">用户日志列表</b></span>
+        </div>
+        <el-divider></el-divider>
+        <el-table
+            :header-cell-style="{ backgroundColor: '#e8e5e5', color: 'black', fontWeight: 'bold'}"
+            :data="tableData"
+            stripe
+            height="700"
+            style="width: 100%; margin-top: 20px">
+          <el-table-column
+              prop="id"
+              label="id">
+          </el-table-column>
+          <el-table-column
+              prop="uid"
+              label="uid">
+          </el-table-column>
+          <el-table-column
+              prop="username"
+              label="操作人">
+          </el-table-column>
+          <el-table-column
+              prop="opTime"
+              label="操作时间">
+          </el-table-column>
+          <el-table-column
+              prop="opType"
+              label="操作类型">
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-card>
+<!--    <div style="margin-bottom: 20px">-->
+<!--      <span>用户名：</span>-->
+<!--      <el-input v-model="username" placeholder="请输入用户名" style="width: 200px"></el-input>-->
+<!--      <el-button style="margin-left: 20px" type="primary" @click="load">搜索</el-button>-->
+<!--      <el-button @click="clean" type="danger">清空</el-button>-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <el-table-->
+<!--          :header-cell-style="{ backgroundColor: '#e8e5e5', color: 'black', fontWeight: 'bold'}"-->
+<!--          :data="tableData"-->
+<!--          stripe-->
+<!--          height="700"-->
+<!--      >-->
+<!--        style="width: 100%">-->
+<!--        <el-table-column-->
+<!--            prop="id"-->
+<!--            label="id">-->
+<!--        </el-table-column>-->
+<!--        <el-table-column-->
+<!--            prop="uid"-->
+<!--            label="uid">-->
+<!--        </el-table-column>-->
+<!--        <el-table-column-->
+<!--            prop="username"-->
+<!--            label="操作人">-->
+<!--        </el-table-column>-->
+<!--        <el-table-column-->
+<!--            prop="opTime"-->
+<!--            label="操作时间">-->
+<!--        </el-table-column>-->
+<!--        <el-table-column-->
+<!--            prop="opType"-->
+<!--            label="操作类型">-->
+<!--        </el-table-column>-->
+<!--      </el-table>-->
+<!--    </div>-->
+    <div style="text-align: center;margin-top: 20px">
+      <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="pageNum"
+          :page-sizes="[10, 30, 50, 100]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
+      </el-pagination>
+    </div>
+  </div>
+</template>
+
+<script>
+import {getRequest} from "@/utils/api";
+
+export  default {
+  name: "logManage",
+  data() {
+    return {
+      tableData: [],
+      pageNum:1,
+      pageSize:10,
+      total: 0,
+      username:""
+    }
+  },
+  created() {
+    this.load()
+  },
+  methods:{
+    load(){
+      getRequest(`userlog/getLogByPage?pageNum=${this.pageNum}&pageSize=${this.pageSize}&username=${this.username}`)
+          .then(res =>{
+            this.tableData = res.data.records
+            this.total = res.data.total
+          })
+    },
+    handleCurrentChange(pageNum){
+      this.pageNum = pageNum
+      this.load()
+    },
+    handleSizeChange(pageSize){
+      this.pageSize = pageSize
+      this.load()
+    },
+    clean(){
+      this.username = ""
+      this.load()
+    }
+  }
+}
+</script>
+<style scoped>
+
+</style>
